@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png" />
+    <title>Frontend Mentor | Age calculator app</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <h1 class="sr-only">An age Calculator</h1>
+      <!-- Form container starts here -->
+      <form id="form">
+        <h2 class="sr-only">Kindly enter your DOB information</h2>
+        <div class="form__input-container">
+          <label for="day" class="form__label">DAY</label>
+          <input
+            type="text"
+            id="day"
+            aria-errormessage="dayErrorMessage"
+            class="form__input"
+            placeholder="DD"
+            required />
+          <p
+            id="dayErrorMessage"
+            aria-live="polite"
+            class="form__error-message form__error-message_hide">
+            Must be a valid day
+          </p>
+        </div>
+        <div class="form__input-container">
+          <label for="month" class="form__label">MONTH</label>
+          <input
+            type="text"
+            id="month"
+            aria-errormessage="monthErrorMessage"
+            class="form__input"
+            placeholder="MM"
+            required />
+          <p
+            id="monthErrorMessage"
+            aria-live="polite"
+            class="form__error-message form__error-message_hide">
+            Must be a valid month
+          </p>
+        </div>
+        <div class="form__input-container">
+          <label for="year" class="form__label">YEAR</label>
+          <input
+            type="text"
+            id="year"
+            aria-errormessage="yearErrorMessage"
+            class="form__input"
+            placeholder="YYYY"
+            required />
+          <p
+            id="yearErrorMessage"
+            aria-live="polite"
+            class="form__error-message form__error-message_hide">
+            Must be in the past
+          </p>
+        </div>
+        <button type="submit" aria-label="submit Button" class="btn form__btn">
+          <img src="./assets/images/icon-arrow.svg" alt="" class="btn__icon" />
+        </button>
+      </form>
+      <!-- Form container ends here -->
+
+      <!-- Result container starts here -->
+      <section class="result">
+        <h2 class="sr-only">Here is your result:</h2>
+        <p class="result__paragraph">
+          <span id="resultYears" class="result__text">--</span> years
+        </p>
+        <p class="result__paragraph">
+          <span id="resultMonths" class="result__text">--</span> months
+        </p>
+        <p class="result__paragraph">
+          <span id="resultDays" class="result__text">--</span> days
+        </p>
+      </section>
+      <!-- Result container ends here -->
+    </main>
+  </body>
+</html>
