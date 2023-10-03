@@ -179,6 +179,7 @@ let currentDay = currentDate.getDate();
 let validDays;
 let invalidDay, invalidMonth, invalidYear;
 let remYears, remMonths, remDays;
+let newRequest = false;
 
 const birth = {
   year: 0,
@@ -199,7 +200,7 @@ const birth = {
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  init();
+  if (newRequest) init();
 
   const birthYear = Number(yearInput.value);
   const birthMonth = Number(monthInput.value);
@@ -210,4 +211,6 @@ form.addEventListener('submit', (e) => {
   validateDate(birthDate, birthMonth, birthYear)
     ? calculateAge(birthDate, birthMonth, birthYear)
     : showError();
+
+  newRequest = true;
 });
