@@ -10,6 +10,11 @@ const daysResult = document.querySelector('#resultDays');
 const yearErrorMessage = document.querySelector('#yearErrorMessage');
 const monthErrorMessage = document.querySelector('#monthErrorMessage');
 const dayErrorMessage = document.querySelector('#dayErrorMessage');
+const resultText = document.querySelectorAll('.result__text');
+
+// Sound effects
+const successSound = new Audio('./assets/sounds/ping.mp3');
+const errorSound = new Audio('./assets/sounds/error.mp3');
 
 // Functions
 const isLeapYear = (year) => {
@@ -40,12 +45,15 @@ const validateDate = (day, month, year) => {
       year > currentYear
     ) {
       getInvalidDate(day, month, year);
+      playSound(errorSound);
       return false;
     } else {
+      playSound(successSound);
       return true;
     }
   } else {
     inValidDay = inValidMonth = inValidYear = true;
+    playSound(errorSound);
     return false;
   }
 };
@@ -59,14 +67,38 @@ const getInvalidDate = (day, month, year) => {
 const showError = () => {
   if (inValidDay) {
     dayInput.setAttribute('aria-invalid', true);
+    dayInput.classList.add('form__input_invalid');
+    dayInput.addEventListener(
+      'animationend',
+      () => {
+        dayInput.classList.remove('form__input_invalid');
+      },
+      { once: true }
+    );
     dayErrorMessage.classList.remove('form__error-message_hide');
   }
   if (inValidMonth) {
     monthInput.setAttribute('aria-invalid', true);
+    monthInput.classList.add('form__input_invalid');
+    monthInput.addEventListener(
+      'animationend',
+      () => {
+        monthInput.classList.remove('form__input_invalid');
+      },
+      { once: true }
+    );
     monthErrorMessage.classList.remove('form__error-message_hide');
   }
   if (inValidYear) {
     yearInput.setAttribute('aria-invalid', true);
+    yearInput.classList.add('form__input_invalid');
+    yearInput.addEventListener(
+      'animationend',
+      () => {
+        yearInput.classList.remove('form__input_invalid');
+      },
+      { once: true }
+    );
     yearErrorMessage.classList.remove('form__error-message_hide');
   }
 };
@@ -80,6 +112,10 @@ const clearError = () => {
 
   yearInput.removeAttribute('aria-invalid');
   yearErrorMessage.classList.add('form__error-message_hide');
+};
+
+const playSound = (sound) => {
+  sound.play();
 };
 
 const saveBirthInfo = (day, month, year) => {
@@ -108,6 +144,16 @@ const calculateAge = (day, month, year) => {
 };
 
 const showAge = () => {
+  resultText.forEach((text) => {
+    text.classList.add('result__text_reveal');
+    text.addEventListener(
+      'animationend',
+      () => {
+        text.classList.remove('result__text_reveal');
+      },
+      { once: true }
+    );
+  });
   yearsResult.textContent = Math.trunc(remYears);
   monthsResult.textContent = Math.trunc(remMonths);
   daysResult.textContent = Math.trunc(remDays);
