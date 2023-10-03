@@ -34,48 +34,51 @@ const confirmDays = (month) => {
 };
 
 const validateDate = (day, month, year) => {
+  console.log('Validating');
   if (day && month && year) {
-    confirmDays(month);
-    if (
-      day <= 0 ||
-      day > validDays ||
-      month <= 0 ||
-      month > 12 ||
-      year <= 0 ||
-      year > currentYear
-    ) {
+    if (day <= 0 || month <= 0 || year <= 0) {
       getInvalidDate(day, month, year);
-      playSound(errorSound);
       return false;
     } else {
-      playSound(successSound);
-      return true;
+      confirmDays(month);
+      if (day > validDays || month > 12 || year > currentYear) {
+        getInvalidDate(day, month, year);
+        playSound(errorSound);
+        return false;
+      } else {
+        playSound(successSound);
+        return true;
+      }
     }
   } else {
-    inValidDay = inValidMonth = inValidYear = true;
+    console.log('Straight false');
+    getInvalidDate(day, month, year);
     playSound(errorSound);
     return false;
   }
 };
 
 const getInvalidDate = (day, month, year) => {
-  if (day <= 0 || day > validDays) inValidDay = true;
-  if (month <= 0 || month > 12) inValidMonth = true;
-  if (year <= 0 || year > currentYear) inValidYear = true;
+  if (validDays ? day <= 0 || day > validDays : day <= 0 || day > 31)
+    invalidDay = true;
+
+  if (month <= 0 || month > 12) invalidMonth = true;
+
+  if (year <= 0 || year > currentYear) invalidYear = true;
 };
 
 const showError = () => {
-  if (inValidDay) {
+  if (invalidDay) {
     dayInput.setAttribute('aria-invalid', true);
     animateFormInput(dayInput);
     dayErrorMessage.classList.remove('form__error-message_hide');
   }
-  if (inValidMonth) {
+  if (invalidMonth) {
     monthInput.setAttribute('aria-invalid', true);
     animateFormInput(monthInput);
     monthErrorMessage.classList.remove('form__error-message_hide');
   }
-  if (inValidYear) {
+  if (invalidYear) {
     yearInput.setAttribute('aria-invalid', true);
     animateFormInput(yearInput);
     yearErrorMessage.classList.remove('form__error-message_hide');
@@ -164,9 +167,9 @@ const resetAge = () => {
 const resetVariables = () => {
   isDateValid = false;
   validDays =
-    inValidDay =
-    inValidMonth =
-    inValidYear =
+    invalidDay =
+    invalidMonth =
+    invalidYear =
     remYears =
     remMonths =
     remDays =
@@ -206,7 +209,7 @@ const birth = {
 
 let isDateValid = false;
 let validDays;
-let inValidDay, inValidMonth, inValidYear;
+let invalidDay, invalidMonth, invalidYear;
 let remYears, remMonths, remDays;
 
 // Events
