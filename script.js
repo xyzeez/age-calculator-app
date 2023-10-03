@@ -18,19 +18,14 @@ const errorSound = new Audio('./assets/sounds/error.mp3');
 
 // Functions
 const isLeapYear = (year) => {
-  if (year % 100 === 0 ? year % 400 === 0 : year % 4 === 0) {
-    return true;
-  } else {
-    return false;
-  }
+  if (year % 100 === 0 ? year % 400 === 0 : year % 4 === 0) return true;
+  return false;
 };
 
 const confirmDays = (month) => {
-  birth.yearDays.forEach((yearDay) => {
-    if (yearDay[1].includes(month)) {
-      validDays = yearDay[0];
-    }
-  });
+  birth.yearDays.forEach(
+    (yearDay) => yearDay[1].includes(month) && (validDays = yearDay[0])
+  );
 };
 
 const validateDate = (day, month, year) => {
@@ -68,27 +63,27 @@ const getInvalidDate = (day, month, year) => {
 const showError = () => {
   if (invalidDay) {
     dayInput.setAttribute('aria-invalid', true);
-    animateFormInput(dayInput);
+    animateElement(dayInput, 'form__input_invalid');
     dayErrorMessage.classList.remove('form__error-message_hide');
   }
   if (invalidMonth) {
     monthInput.setAttribute('aria-invalid', true);
-    animateFormInput(monthInput);
+    animateElement(monthInput, 'form__input_invalid');
     monthErrorMessage.classList.remove('form__error-message_hide');
   }
   if (invalidYear) {
     yearInput.setAttribute('aria-invalid', true);
-    animateFormInput(yearInput);
+    animateElement(yearInput, 'form__input_invalid');
     yearErrorMessage.classList.remove('form__error-message_hide');
   }
 };
 
-const animateFormInput = (input) => {
-  input.classList.add('form__input_invalid');
-  input.addEventListener(
+const animateElement = (element, animation) => {
+  element.classList.add(animation);
+  element.addEventListener(
     'animationend',
     () => {
-      input.classList.remove('form__input_invalid');
+      element.classList.remove(animation);
     },
     { once: true }
   );
@@ -135,16 +130,7 @@ const calculateAge = (day, month, year) => {
 };
 
 const showAge = () => {
-  resultText.forEach((text) => {
-    text.classList.add('result__text_reveal');
-    text.addEventListener(
-      'animationend',
-      () => {
-        text.classList.remove('result__text_reveal');
-      },
-      { once: true }
-    );
-  });
+  resultText.forEach((text) => animateElement(text, 'result__text_reveal'));
   yearsResult.textContent = Math.trunc(remYears);
   monthsResult.textContent = Math.trunc(remMonths);
   daysResult.textContent = Math.trunc(remDays);
