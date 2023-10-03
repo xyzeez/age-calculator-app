@@ -34,7 +34,6 @@ const confirmDays = (month) => {
 };
 
 const validateDate = (day, month, year) => {
-  console.log('Validating');
   if (day && month && year) {
     if (day <= 0 || month <= 0 || year <= 0) {
       getInvalidDate(day, month, year);
@@ -51,7 +50,6 @@ const validateDate = (day, month, year) => {
       }
     }
   } else {
-    console.log('Straight false');
     getInvalidDate(day, month, year);
     playSound(errorSound);
     return false;
@@ -174,6 +172,7 @@ const resetVariables = () => {
     remMonths =
     remDays =
       null;
+  currentDate = new Date();
   currentYear = currentDate.getFullYear();
   currentMonth = currentDate.getMonth() + 1;
   currentDay = currentDate.getDate();
@@ -187,7 +186,7 @@ const init = () => {
 };
 
 // Variables
-const currentDate = new Date();
+let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentMonth = currentDate.getMonth() + 1;
 let currentDay = currentDate.getDate();
@@ -196,10 +195,6 @@ const monthDays = [
   [30, [4, 6, 9, 11]],
   [31, [1, 3, 5, 7, 8, 10, 12]],
 ];
-
-const getLeapYear = isLeapYear(currentYear)
-  ? (monthDays[2] = [29, [2]])
-  : (monthDays[2] = [28, [2]]);
 
 const birth = {
   year: 0,
@@ -215,13 +210,18 @@ let remYears, remMonths, remDays;
 // Events
 form.addEventListener('submit', (e) => {
   e.preventDefault();
+
   init();
 
-  const year = Number(yearInput.value);
-  const month = Number(monthInput.value);
-  const day = Number(dayInput.value);
+  const birthYear = Number(yearInput.value);
+  const birthMonth = Number(monthInput.value);
+  const birthDate = Number(dayInput.value);
 
-  isDateValid = validateDate(day, month, year)
-    ? calculateAge(day, month, year)
+  isLeapYear(birthYear)
+    ? (monthDays[2] = [29, [2]])
+    : (monthDays[2] = [28, [2]]);
+
+  isDateValid = validateDate(birthDate, birthMonth, birthYear)
+    ? calculateAge(birthDate, birthMonth, birthYear)
     : showError();
 });
