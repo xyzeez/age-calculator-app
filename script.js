@@ -67,40 +67,30 @@ const getInvalidDate = (day, month, year) => {
 const showError = () => {
   if (inValidDay) {
     dayInput.setAttribute('aria-invalid', true);
-    dayInput.classList.add('form__input_invalid');
-    dayInput.addEventListener(
-      'animationend',
-      () => {
-        dayInput.classList.remove('form__input_invalid');
-      },
-      { once: true }
-    );
+    animateFormInput(dayInput);
     dayErrorMessage.classList.remove('form__error-message_hide');
   }
   if (inValidMonth) {
     monthInput.setAttribute('aria-invalid', true);
-    monthInput.classList.add('form__input_invalid');
-    monthInput.addEventListener(
-      'animationend',
-      () => {
-        monthInput.classList.remove('form__input_invalid');
-      },
-      { once: true }
-    );
+    animateFormInput(monthInput);
     monthErrorMessage.classList.remove('form__error-message_hide');
   }
   if (inValidYear) {
     yearInput.setAttribute('aria-invalid', true);
-    yearInput.classList.add('form__input_invalid');
-    yearInput.addEventListener(
-      'animationend',
-      () => {
-        yearInput.classList.remove('form__input_invalid');
-      },
-      { once: true }
-    );
+    animateFormInput(yearInput);
     yearErrorMessage.classList.remove('form__error-message_hide');
   }
+};
+
+const animateFormInput = (input) => {
+  input.classList.add('form__input_invalid');
+  input.addEventListener(
+    'animationend',
+    () => {
+      input.classList.remove('form__input_invalid');
+    },
+    { once: true }
+  );
 };
 
 const clearError = () => {
