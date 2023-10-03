@@ -26,9 +26,9 @@ const isLeapYear = (year) => {
 };
 
 const confirmDays = (month) => {
-  monthDays.forEach((x) => {
-    if (x[1].includes(month)) {
-      validDays = x[0];
+  birth.yearDays.forEach((yearDay) => {
+    if (yearDay[1].includes(month)) {
+      validDays = yearDay[0];
     }
   });
 };
@@ -113,10 +113,10 @@ const saveBirthInfo = (day, month, year) => {
   birth.day = day;
   birth.month = month;
   birth.year = year;
+  birth.updateYearDays();
 };
 
 const calculateAge = (day, month, year) => {
-  saveBirthInfo(day, month, year);
   if (currentDay < birth.day) {
     currentMonth--;
     currentDay += 30.5;
@@ -163,7 +163,6 @@ const resetAge = () => {
 };
 
 const resetVariables = () => {
-  isDateValid = false;
   validDays =
     invalidDay =
     invalidMonth =
@@ -190,22 +189,24 @@ let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentMonth = currentDate.getMonth() + 1;
 let currentDay = currentDate.getDate();
-
-const monthDays = [
-  [30, [4, 6, 9, 11]],
-  [31, [1, 3, 5, 7, 8, 10, 12]],
-];
+let validDays;
+let invalidDay, invalidMonth, invalidYear;
+let remYears, remMonths, remDays;
 
 const birth = {
   year: 0,
   month: 0,
   day: 0,
+  yearDays: [
+    [30, [4, 6, 9, 11]],
+    [31, [1, 3, 5, 7, 8, 10, 12]],
+  ],
+  updateYearDays() {
+    isLeapYear(this.year)
+      ? this.yearDays.unshift([29, [2]])
+      : this.yearDays.unshift([28, [2]]);
+  },
 };
-
-let isDateValid = false;
-let validDays;
-let invalidDay, invalidMonth, invalidYear;
-let remYears, remMonths, remDays;
 
 // Events
 form.addEventListener('submit', (e) => {
@@ -217,11 +218,9 @@ form.addEventListener('submit', (e) => {
   const birthMonth = Number(monthInput.value);
   const birthDate = Number(dayInput.value);
 
-  isLeapYear(birthYear)
-    ? (monthDays[2] = [29, [2]])
-    : (monthDays[2] = [28, [2]]);
+  saveBirthInfo(birthDate, birthMonth, birthYear);
 
-  isDateValid = validateDate(birthDate, birthMonth, birthYear)
+  validateDate(birthDate, birthMonth, birthYear)
     ? calculateAge(birthDate, birthMonth, birthYear)
     : showError();
 });
