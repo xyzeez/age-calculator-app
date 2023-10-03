@@ -378,7 +378,7 @@ main {
   }
 
   .form__input {
-    font-size: clamp(1rem, 11.7vw, 1.7rem);
+    font-size: clamp(1rem, 11.7vw, 2rem);
     width: 100%;
   }
 
