@@ -154,6 +154,7 @@ const clearBirthInfo = () => {
   birth.year = 0;
   birth.month = 0;
   birth.day = 0;
+  birth.yearDays.splice(0, 1);
 };
 
 const resetAge = () => {
