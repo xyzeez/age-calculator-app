@@ -17,26 +17,41 @@ const successSound = new Audio('./assets/sounds/ping.mp3');
 const errorSound = new Audio('./assets/sounds/error.mp3');
 
 // Functions
+const playSound = (sound) => {
+  sound.play();
+};
+
+const animateElement = (element, animation) => {
+  element.classList.add(animation);
+  element.addEventListener(
+    'animationend',
+    () => {
+      element.classList.remove(animation);
+    },
+    { once: true }
+  );
+};
+
 const isLeapYear = (year) => {
   if (year % 100 === 0 ? year % 400 === 0 : year % 4 === 0) return true;
   return false;
 };
 
-const confirmDays = (month) => {
-  birth.yearDays.forEach(
-    (yearDay) => yearDay[1].includes(month) && (validDays = yearDay[0])
+const confirmMonthDays = (month) => {
+  currentUser.birthYearCalender.forEach(
+    (calender) => calender[1].includes(month) && (validDays = calender[0])
   );
 };
 
-const validateDate = (day, month, year) => {
-  if (day && month && year) {
-    if (day <= 0 || month <= 0 || year <= 0) {
-      getInvalidDate(day, month, year);
+const validateDate = (birthDate, birthMonth, birthYear) => {
+  if (birthDate && birthMonth && birthYear) {
+    if (birthDate <= 0 || birthMonth <= 0 || birthYear <= 0) {
+      getInvalidDate(birthDate, birthMonth, birthYear);
       return false;
     } else {
-      confirmDays(month);
-      if (day > validDays || month > 12 || year > currentYear) {
-        getInvalidDate(day, month, year);
+      confirmMonthDays(birthMonth);
+      if (birthDate > validDays || birthMonth > 12 || birthYear > currentYear) {
+        getInvalidDate(birthDate, birthMonth, birthYear);
         playSound(errorSound);
         return false;
       } else {
@@ -45,14 +60,14 @@ const validateDate = (day, month, year) => {
       }
     }
   } else {
-    getInvalidDate(day, month, year);
+    getInvalidDate(birthDate, birthMonth, birthYear);
     playSound(errorSound);
     return false;
   }
 };
 
-const getInvalidDate = (day, month, year) => {
-  if (validDays ? day <= 0 || day > validDays : day <= 0 || day > 31)
+const getInvalidDate = (date, month, year) => {
+  if (validDays ? date <= 0 || date > validDays : date <= 0 || date > 31)
     invalidDay = true;
 
   if (month <= 0 || month > 12) invalidMonth = true;
@@ -78,17 +93,6 @@ const showError = () => {
   }
 };
 
-const animateElement = (element, animation) => {
-  element.classList.add(animation);
-  element.addEventListener(
-    'animationend',
-    () => {
-      element.classList.remove(animation);
-    },
-    { once: true }
-  );
-};
-
 const clearError = () => {
   dayInput.removeAttribute('aria-invalid');
   dayErrorMessage.classList.add('form__error-message_hide');
@@ -100,47 +104,11 @@ const clearError = () => {
   yearErrorMessage.classList.add('form__error-message_hide');
 };
 
-const playSound = (sound) => {
-  sound.play();
-};
-
-const saveBirthInfo = (day, month, year) => {
-  birth.day = day;
-  birth.month = month;
-  birth.year = year;
-  birth.updateYearDays();
-};
-
-const calculateAge = (day, month, year) => {
-  if (currentDay < birth.day) {
-    currentMonth--;
-    currentDay += 30.5;
-  }
-
-  if (currentMonth < birth.month) {
-    currentYear--;
-    currentMonth += 12;
-  }
-
-  remDays = currentDay - birth.day;
-  remMonths = currentMonth - birth.month;
-  remYears = currentYear - birth.year;
-
-  showAge();
-};
-
 const showAge = () => {
   resultText.forEach((text) => animateElement(text, 'result__text_reveal'));
-  yearsResult.textContent = Math.trunc(remYears);
-  monthsResult.textContent = Math.trunc(remMonths);
-  daysResult.textContent = Math.trunc(remDays);
-};
-
-const clearBirthInfo = () => {
-  birth.year = 0;
-  birth.month = 0;
-  birth.day = 0;
-  birth.yearDays.splice(0, 1);
+  yearsResult.textContent = Math.trunc(currentUser.age.years);
+  monthsResult.textContent = Math.trunc(currentUser.age.months);
+  daysResult.textContent = Math.trunc(currentUser.age.days);
 };
 
 const resetAge = () => {
@@ -149,15 +117,21 @@ const resetAge = () => {
   daysResult.textContent = '--';
 };
 
+const saveUserInfo = (date, month, year) => {
+  currentUser = new Birth(date, month, year);
+  currentUser.getYearCalender();
+};
+
+const clearUserInfo = () => {
+  currentUser.year = 0;
+  currentUser.month = 0;
+  currentUser.day = 0;
+  currentUser.birthYearCalender = [];
+  currentUser.age = {};
+};
+
 const resetVariables = () => {
-  validDays =
-    invalidDay =
-    invalidMonth =
-    invalidYear =
-    remYears =
-    remMonths =
-    remDays =
-      null;
+  validDays = invalidDay = invalidMonth = invalidYear = null;
   currentDate = new Date();
   currentYear = currentDate.getFullYear();
   currentMonth = currentDate.getMonth() + 1;
@@ -166,7 +140,7 @@ const resetVariables = () => {
 
 const init = () => {
   resetVariables();
-  clearBirthInfo();
+  clearUserInfo();
   resetAge();
   clearError();
 };
@@ -176,24 +150,49 @@ let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentMonth = currentDate.getMonth() + 1;
 let currentDay = currentDate.getDate();
+
+let currentUser;
 let validDays;
 let invalidDay, invalidMonth, invalidYear;
-let remYears, remMonths, remDays;
 let newRequest = false;
 
-const birth = {
-  year: 0,
-  month: 0,
-  day: 0,
-  yearDays: [
-    [30, [4, 6, 9, 11]],
-    [31, [1, 3, 5, 7, 8, 10, 12]],
-  ],
-  updateYearDays() {
+// User Type
+const Birth = function (date, month, year) {
+  this.date = date;
+  this.month = month;
+  this.year = year;
+};
+
+Birth.prototype.getYearCalender = function () {
+  if (this.year) {
     isLeapYear(this.year)
-      ? this.yearDays.unshift([29, [2]])
-      : this.yearDays.unshift([28, [2]]);
-  },
+      ? (this.birthYearCalender = [[29, [2]]])
+      : (this.birthYearCalender = [[28, [2]]]);
+    this.birthYearCalender.push(
+      [30, [4, 6, 9, 11]],
+      [31, [1, 3, 5, 7, 8, 10, 12]]
+    );
+  }
+};
+
+Birth.prototype.calcAge = function () {
+  if (currentDay < this.date) {
+    currentMonth--;
+    currentDay += 30.5;
+  }
+
+  if (currentMonth < this.month) {
+    currentYear--;
+    currentMonth += 12;
+  }
+
+  this.age = {
+    days: currentDay - this.date,
+    months: currentMonth - this.month,
+    years: currentYear - this.year,
+  };
+
+  showAge();
 };
 
 // Events
@@ -206,10 +205,10 @@ form.addEventListener('submit', (e) => {
   const birthMonth = Number(monthInput.value);
   const birthDate = Number(dayInput.value);
 
-  saveBirthInfo(birthDate, birthMonth, birthYear);
+  saveUserInfo(birthDate, birthMonth, birthYear);
 
   validateDate(birthDate, birthMonth, birthYear)
-    ? calculateAge(birthDate, birthMonth, birthYear)
+    ? currentUser.calcAge(birthDate, birthMonth, birthYear)
     : showError();
 
   newRequest = true;
