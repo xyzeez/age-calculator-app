@@ -110,21 +110,21 @@ address {
   font-family: Poppins;
   font-weight: 400;
   font-style: italic;
-  src: url(./assets/fonts/Poppins-Italic.ttf);
+  src: url(./assets/fonts/Poppins.woff2);
 }
 
 @font-face {
   font-family: Poppins;
   font-weight: 700;
   font-style: normal;
-  src: url(./assets/fonts/Poppins-Bold.ttf);
+  src: url(./assets/fonts/Poppins\ Bold.woff2);
 }
 
 @font-face {
   font-family: Poppins;
   font-weight: 800;
   font-style: italic;
-  src: url(./assets/fonts/Poppins-ExtraBoldItalic.ttf);
+  src: url(./assets/fonts/Poppins\ ExtraBold\ Italic.woff2);
 }
 
 /* Custom properties */
