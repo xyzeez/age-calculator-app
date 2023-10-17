@@ -17,14 +17,6 @@ const successSound = new Audio('./assets/sounds/ping.mp3');
 const errorSound = new Audio('./assets/sounds/error.mp3');
 
 // Functions
-const initSounds = () => {
-  successSound.play();
-  successSound.pause();
-
-  errorSound.play();
-  errorSound.pause();
-};
-
 const playSound = (sound) => {
   sound.play();
 };
@@ -206,8 +198,6 @@ Birth.prototype.calcAge = function () {
 // Events
 form.addEventListener('submit', (e) => {
   e.preventDefault();
-
-  initSounds();
 
   if (newRequest) init();
 
