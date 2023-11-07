@@ -32,184 +32,215 @@ const animateElement = (element, animation) => {
   );
 };
 
-const isLeapYear = (year) => {
-  if (year % 100 === 0 ? year % 400 === 0 : year % 4 === 0) return true;
-  return false;
-};
+class Birth {
+  constructor(date, month, year) {
+    this.date = date;
+    this.month = month;
+    this.year = year;
+    this._getYearCalender();
+  }
 
-const confirmMonthDays = (month) => {
-  currentUser.birthYearCalender.forEach(
-    (calender) => calender[1].includes(month) && (validDays = calender[0])
-  );
-};
-
-const validateDate = (birthDate, birthMonth, birthYear) => {
-  if (birthDate && birthMonth && birthYear) {
-    if (birthDate <= 0 || birthMonth <= 0 || birthYear <= 0) {
-      getInvalidDate(birthDate, birthMonth, birthYear);
-      return false;
-    } else {
-      confirmMonthDays(birthMonth);
-      if (birthDate > validDays || birthMonth > 12 || birthYear > currentYear) {
-        getInvalidDate(birthDate, birthMonth, birthYear);
-        playSound(errorSound);
-        return false;
-      } else {
-        playSound(successSound);
-        return true;
-      }
-    }
-  } else {
-    getInvalidDate(birthDate, birthMonth, birthYear);
-    playSound(errorSound);
+  _isLeapYear = () => {
+    if (this.year % 100 === 0 ? this.year % 400 === 0 : this.year % 4 === 0)
+      return true;
     return false;
-  }
-};
-
-const getInvalidDate = (date, month, year) => {
-  if (validDays ? date <= 0 || date > validDays : date <= 0 || date > 31)
-    invalidDay = true;
-
-  if (month <= 0 || month > 12) invalidMonth = true;
-
-  if (year <= 0 || year > currentYear) invalidYear = true;
-};
-
-const showError = () => {
-  if (invalidDay) {
-    dayInput.setAttribute('aria-invalid', true);
-    animateElement(dayInput, 'form__input_invalid');
-    dayErrorMessage.classList.remove('form__error-message_hide');
-  }
-  if (invalidMonth) {
-    monthInput.setAttribute('aria-invalid', true);
-    animateElement(monthInput, 'form__input_invalid');
-    monthErrorMessage.classList.remove('form__error-message_hide');
-  }
-  if (invalidYear) {
-    yearInput.setAttribute('aria-invalid', true);
-    animateElement(yearInput, 'form__input_invalid');
-    yearErrorMessage.classList.remove('form__error-message_hide');
-  }
-};
-
-const clearError = () => {
-  dayInput.removeAttribute('aria-invalid');
-  dayErrorMessage.classList.add('form__error-message_hide');
-
-  monthInput.removeAttribute('aria-invalid');
-  monthErrorMessage.classList.add('form__error-message_hide');
-
-  yearInput.removeAttribute('aria-invalid');
-  yearErrorMessage.classList.add('form__error-message_hide');
-};
-
-const showAge = () => {
-  resultText.forEach((text) => animateElement(text, 'result__text_reveal'));
-  yearsResult.textContent = Math.trunc(currentUser.age.years);
-  monthsResult.textContent = Math.trunc(currentUser.age.months);
-  daysResult.textContent = Math.trunc(currentUser.age.days);
-};
-
-const resetAge = () => {
-  yearsResult.textContent = '--';
-  monthsResult.textContent = '--';
-  daysResult.textContent = '--';
-};
-
-const saveUserInfo = (date, month, year) => {
-  currentUser = new Birth(date, month, year);
-  currentUser.getYearCalender();
-};
-
-const clearUserInfo = () => {
-  currentUser.year = 0;
-  currentUser.month = 0;
-  currentUser.day = 0;
-  currentUser.birthYearCalender = [];
-  currentUser.age = {};
-};
-
-const resetVariables = () => {
-  validDays = invalidDay = invalidMonth = invalidYear = null;
-  currentDate = new Date();
-  currentYear = currentDate.getFullYear();
-  currentMonth = currentDate.getMonth() + 1;
-  currentDay = currentDate.getDate();
-};
-
-const init = () => {
-  resetVariables();
-  clearUserInfo();
-  resetAge();
-  clearError();
-};
-
-// Variables
-let currentDate = new Date();
-let currentYear = currentDate.getFullYear();
-let currentMonth = currentDate.getMonth() + 1;
-let currentDay = currentDate.getDate();
-
-let currentUser;
-let validDays;
-let invalidDay, invalidMonth, invalidYear;
-let newRequest = false;
-
-// User Type
-const Birth = function (date, month, year) {
-  this.date = date;
-  this.month = month;
-  this.year = year;
-};
-
-Birth.prototype.getYearCalender = function () {
-  if (this.year) {
-    isLeapYear(this.year)
-      ? (this.birthYearCalender = [[29, [2]]])
-      : (this.birthYearCalender = [[28, [2]]]);
-    this.birthYearCalender.push(
-      [30, [4, 6, 9, 11]],
-      [31, [1, 3, 5, 7, 8, 10, 12]]
-    );
-  }
-};
-
-Birth.prototype.calcAge = function () {
-  if (currentDay < this.date) {
-    currentMonth--;
-    currentDay += 30.5;
-  }
-
-  if (currentMonth < this.month) {
-    currentYear--;
-    currentMonth += 12;
-  }
-
-  this.age = {
-    days: currentDay - this.date,
-    months: currentMonth - this.month,
-    years: currentYear - this.year,
   };
 
-  showAge();
-};
+  _getYearCalender = () => {
+    if (this.year) {
+      this._isLeapYear()
+        ? (this.birthYearCalender = [[29, [2]]])
+        : (this.birthYearCalender = [[28, [2]]]);
 
-// Events
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
+      this.birthYearCalender.push(
+        [30, [4, 6, 9, 11]],
+        [31, [1, 3, 5, 7, 8, 10, 12]]
+      );
+    }
+  };
+}
 
-  if (newRequest) init();
+class App {
+  #currentDate;
+  #currentYear;
+  #currentMonth;
+  #currentDay;
+  #currentUser;
+  #validDays;
+  #invalidDay;
+  #invalidMonth;
+  #invalidYear;
+  #userData;
 
-  const birthYear = Number(yearInput.value);
-  const birthMonth = Number(monthInput.value);
-  const birthDate = Number(dayInput.value);
+  constructor() {
+    this._setDates();
+    this._getUserData();
+    form.addEventListener('submit', (e) => this._newBirth(e));
+  }
 
-  saveUserInfo(birthDate, birthMonth, birthYear);
+  _setDates = () => {
+    this.#currentDate = new Date();
+    this.#currentYear = this.#currentDate.getFullYear();
+    this.#currentMonth = this.#currentDate.getMonth() + 1;
+    this.#currentDay = this.#currentDate.getDate();
+  };
 
-  validateDate(birthDate, birthMonth, birthYear)
-    ? currentUser.calcAge(birthDate, birthMonth, birthYear)
-    : showError();
+  _newBirth = (e) => {
+    e.preventDefault();
 
-  newRequest = true;
-});
+    if (this.#userData) this._init();
+
+    const birthYear = Number(yearInput.value);
+    const birthMonth = Number(monthInput.value);
+    const birthDate = Number(dayInput.value);
+
+    this.#currentUser = new Birth(birthDate, birthMonth, birthYear);
+    this._validateDate(birthDate, birthMonth, birthYear)
+      ? this._calcAge()
+      : this._showError();
+  };
+
+  _init = () => {
+    this._resetAge();
+    this._clearError();
+  };
+
+  _validateDate = (birthDate, birthMonth, birthYear) => {
+    if (birthDate && birthMonth && birthYear) {
+      if (birthDate <= 0 || birthMonth <= 0 || birthYear <= 0) {
+        this._getInvalidDate(birthDate, birthMonth, birthYear);
+        return false;
+      } else {
+        this._confirmMonthDays(birthMonth);
+        if (
+          birthDate > this.#validDays ||
+          birthMonth > 12 ||
+          birthYear > this.#currentYear
+        ) {
+          this._getInvalidDate(birthDate, birthMonth, birthYear);
+          playSound(errorSound);
+          return false;
+        } else {
+          playSound(successSound);
+          return true;
+        }
+      }
+    } else {
+      this._getInvalidDate(birthDate, birthMonth, birthYear);
+      playSound(errorSound);
+      return false;
+    }
+  };
+
+  _getInvalidDate = (date, month, year) => {
+    if (
+      this.#validDays
+        ? date <= 0 || date > this.#validDays
+        : date <= 0 || date > 31
+    ) {
+      this.#invalidDay = true;
+    } else {
+      this.#invalidDay = false;
+    }
+
+    if (month <= 0 || month > 12) {
+      this.#invalidMonth = true;
+    } else {
+      this.#invalidMonth = false;
+    }
+
+    if (year <= 0 || year > this.#currentYear) {
+      this.#invalidYear = true;
+    } else {
+      this.#invalidYear = false;
+    }
+  };
+
+  _confirmMonthDays = (month) => {
+    this.#currentUser.birthYearCalender.forEach(
+      (calender) =>
+        calender[1].includes(month) && (this.#validDays = calender[0])
+    );
+  };
+
+  _calcAge = () => {
+    if (this.#currentDay < this.#currentUser.date) {
+      this.#currentMonth--;
+      this.#currentDay += 30.5;
+    }
+
+    if (this.#currentMonth < this.#currentUser.month) {
+      this.#currentYear--;
+      this.#currentMonth += 12;
+    }
+
+    this.#currentUser.age = {
+      days: this.#currentDay - this.#currentUser.date,
+      months: this.#currentMonth - this.#currentUser.month,
+      years: this.#currentYear - this.#currentUser.year,
+    };
+
+    this._storeUserData();
+
+    this._generateAge();
+  };
+
+  _storeUserData = () => {
+    this.#userData = this.#currentUser.age;
+    localStorage.setItem('userLocalData', JSON.stringify(this.#userData));
+  };
+
+  _getUserData = () => {
+    this.#userData = JSON.parse(localStorage.getItem('userLocalData'));
+
+    if (this.#userData) this._showAge();
+  };
+
+  _generateAge = () => {
+    resultText.forEach((text) => animateElement(text, 'result__text_reveal'));
+    this._showAge();
+  };
+
+  _showAge = () => {
+    yearsResult.textContent = Math.trunc(this.#userData.years);
+    monthsResult.textContent = Math.trunc(this.#userData.months);
+    daysResult.textContent = Math.trunc(this.#userData.days);
+  };
+
+  _resetAge = () => {
+    yearsResult.textContent = '--';
+    monthsResult.textContent = '--';
+    daysResult.textContent = '--';
+  };
+
+  _showError = () => {
+    if (this.#invalidDay) {
+      dayInput.setAttribute('aria-invalid', true);
+      animateElement(dayInput, 'form__input_invalid');
+      dayErrorMessage.classList.remove('form__error-message_hide');
+    }
+    if (this.#invalidMonth) {
+      monthInput.setAttribute('aria-invalid', true);
+      animateElement(monthInput, 'form__input_invalid');
+      monthErrorMessage.classList.remove('form__error-message_hide');
+    }
+    if (this.#invalidYear) {
+      yearInput.setAttribute('aria-invalid', true);
+      animateElement(yearInput, 'form__input_invalid');
+      yearErrorMessage.classList.remove('form__error-message_hide');
+    }
+  };
+
+  _clearError = () => {
+    dayInput.removeAttribute('aria-invalid');
+    dayErrorMessage.classList.add('form__error-message_hide');
+
+    monthInput.removeAttribute('aria-invalid');
+    monthErrorMessage.classList.add('form__error-message_hide');
+
+    yearInput.removeAttribute('aria-invalid');
+    yearErrorMessage.classList.add('form__error-message_hide');
+  };
+}
+
+const app = new App();
